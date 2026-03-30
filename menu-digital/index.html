@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital — Demo | AutoSite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050510;
+            --surface: #0a0a1a;
+            --card: #0f0f20;
+            --border: rgba(255,255,255,0.06);
+            --text: #e0e0e8;
+            --text-dim: #7a7a8e;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --orange: #e17055;
+            --green: #00cec9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ========== HEADER ========== */
+        .menu-header {
+            position: relative;
+            text-align: center;
+            padding: 3rem 1.5rem 2rem;
+            background: linear-gradient(180deg, rgba(108,92,231,0.08) 0%, transparent 100%);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.5rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover { color: #fff; }
+
+        .restaurant-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--orange), #fdcb6e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .menu-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .menu-header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 0.4rem;
+        }
+
+        .demo-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.3rem 1rem;
+            background: rgba(108,92,231,0.15);
+            border: 1px solid rgba(108,92,231,0.25);
+            border-radius: 50px;
+            color: var(--accent-light);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========== SEARCH ========== */
+        .search-bar {
+            max-width: 500px;
+            margin: 1.5rem auto 0;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus { border-color: var(--accent); }
+
+        .search-bar svg {
+            position: absolute;
+            left: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        /* ========== CATEGORIES ========== */
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1.5rem 1.5rem 0;
+            max-width: 600px;
+            margin: 0 auto;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar { display: none; }
+
+        .cat-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* ========== MENU ITEMS ========== */
+        .menu-section {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-light);
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            border-color: rgba(108,92,231,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: var(--card);
+        }
+
+        .item-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-desc {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        .item-price {
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--green);
+        }
+
+        .item-tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .tag-popular { background: rgba(253,121,168,0.15); color: #fd79a8; }
+        .tag-new { background: rgba(0,206,201,0.15); color: #00cec9; }
+        .tag-spicy { background: rgba(225,112,85,0.15); color: #e17055; }
+
+        /* ========== FOOTER ========== */
+        .menu-footer {
+            text-align: center;
+            padding: 2rem 1.5rem 3rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .menu-footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        .powered {
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .powered-logo {
+            font-weight: 800;
+            background: linear-gradient(135deg, #6c5ce7, #00cec9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: var(--card);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal h2 { font-size: 1.5rem; font-weight: 800; }
+        .modal .modal-desc { color: var(--text-dim); margin: 0.8rem 0 1.5rem; line-height: 1.7; font-size: 0.95rem; }
+        .modal .modal-price { font-size: 1.8rem; font-weight: 900; color: var(--green); }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 600px) {
+            .modal {
+                border-radius: 24px;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="menu-header">
+    <a href="../index.html" class="back-link">← Volver a AutoSite</a>
+    <div class="restaurant-logo">🍔</div>
+    <h1>Burger Palace</h1>
+    <p>📍 Av. Revolución 234, CDMX — ⏰ 12:00 - 23:00</p>
+    <div class="demo-badge">✦ Demo del menú digital</div>
+
+    <div class="search-bar">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar en el menú..." id="searchInput">
+    </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories" id="categories">
+    <button class="cat-btn active" data-cat="all">Todos</button>
+    <button class="cat-btn" data-cat="burgers">🍔 Burgers</button>
+    <button class="cat-btn" data-cat="sides">🍟 Acompañamientos</button>
+    <button class="cat-btn" data-cat="drinks">🥤 Bebidas</button>
+    <button class="cat-btn" data-cat="desserts">🍰 Postres</button>
+</div>
+
+<!-- MENU -->
+<div class="menu-section" id="menuSection">
+    <!-- Burgers -->
+    <div class="section-title" data-cat="burgers">Burgers</div>
+
+    <div class="menu-item" data-cat="burgers" data-name="Classic Smash Burger" data-desc="Doble carne smash de 120g, queso cheddar derretido, cebolla caramelizada, pepinillos y salsa especial de la casa." data-price="$149" data-emoji="🍔">
+        <div class="item-img">🍔</div>
+        <div class="item-info">
+            <div class="item-name">Classic Smash Burger</div>
+            <div class="item-desc">Doble carne smash, queso cheddar, cebolla caramelizada y salsa especial.</div>
+            <div class="item-bottom">
+                <div class="item-price">$149</div>
+                <span class="item-tag tag-popular">★ Popular</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="burgers" data-name="BBQ Bacon Deluxe" data-desc="Carne angus 200g, tocino ahumado crujiente, aros de cebolla, queso gouda y salsa BBQ artesanal." data-price="$189" data-emoji="🍔">
+        <div class="item-img">🍔</div>
+        <div class="item-info">
+            <div class="item-name">BBQ Bacon Deluxe</div>
+            <div class="item-desc">Carne angus, tocino ahumado, aros de cebolla, queso gouda y BBQ.</div>
+            <div class="item-bottom">
+                <div class="item-price">$189</div>
+                <span class="item-tag tag-spicy">🔥 Intensa</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="burgers" data-name="Mushroom Swiss" data-desc="Carne de res 180g, champiñones salteados con mantequilla, queso suizo derretido y arúgula fresca." data-price="$169" data-emoji="🍄">
+        <div class="item-img">🍄</div>
+        <div class="item-info">
+            <div class="item-name">Mushroom Swiss</div>
+            <div class="item-desc">Champiñones salteados, queso suizo y arúgula fresca.</div>
+            <div class="item-bottom">
+                <div class="item-price">$169</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="burgers" data-name="Veggie Crunch" data-desc="Hamburguesa de garbanzos y quinoa, aguacate, tomate, lechuga y aderezo de chipotle vegano." data-price="$139" data-emoji="🥑">
+        <div class="item-img">🥑</div>
+        <div class="item-info">
+            <div class="item-name">Veggie Crunch</div>
+            <div class="item-desc">Hamburguesa de garbanzos, aguacate, tomate y aderezo chipotle vegano.</div>
+            <div class="item-bottom">
+                <div class="item-price">$139</div>
+                <span class="item-tag tag-new">✦ Nuevo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sides -->
+    <div class="section-title" data-cat="sides">Acompañamientos</div>
+
+    <div class="menu-item" data-cat="sides" data-name="Papas Loaded" data-desc="Papas fritas gruesas con queso cheddar, tocino, cebollín y crema ácida." data-price="$89" data-emoji="🍟">
+        <div class="item-img">🍟</div>
+        <div class="item-info">
+            <div class="item-name">Papas Loaded</div>
+            <div class="item-desc">Papas con cheddar, tocino, cebollín y crema ácida.</div>
+            <div class="item-bottom">
+                <div class="item-price">$89</div>
+                <span class="item-tag tag-popular">★ Popular</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="sides" data-name="Onion Rings" data-desc="Aros de cebolla empanizados crujientes, servidos con dip de ranch casero." data-price="$69" data-emoji="🧅">
+        <div class="item-img">🧅</div>
+        <div class="item-info">
+            <div class="item-name">Onion Rings</div>
+            <div class="item-desc">Aros de cebolla crujientes con dip de ranch casero.</div>
+            <div class="item-bottom">
+                <div class="item-price">$69</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="sides" data-name="Alitas Buffalo" data-desc="6 piezas de alitas de pollo bañadas en salsa buffalo picante con apio y blue cheese." data-price="$119" data-emoji="🍗">
+        <div class="item-img">🍗</div>
+        <div class="item-info">
+            <div class="item-name">Alitas Buffalo</div>
+            <div class="item-desc">6 alitas en salsa buffalo con apio y blue cheese.</div>
+            <div class="item-bottom">
+                <div class="item-price">$119</div>
+                <span class="item-tag tag-spicy">🔥 Picante</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drinks -->
+    <div class="section-title" data-cat="drinks">Bebidas</div>
+
+    <div class="menu-item" data-cat="drinks" data-name="Limonada de Frutos Rojos" data-desc="Limonada natural con mezcla de frutos rojos, hielo frappe y hojas de menta." data-price="$59" data-emoji="🍓">
+        <div class="item-img">🍓</div>
+        <div class="item-info">
+            <div class="item-name">Limonada de Frutos Rojos</div>
+            <div class="item-desc">Limonada natural con frutos rojos y menta fresca.</div>
+            <div class="item-bottom">
+                <div class="item-price">$59</div>
+                <span class="item-tag tag-new">✦ Nuevo</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="drinks" data-name="Malteada Oreo" data-desc="Malteada cremosa de vainilla con galletas Oreo trituradas y crema batida." data-price="$79" data-emoji="🥛">
+        <div class="item-img">🥛</div>
+        <div class="item-info">
+            <div class="item-name">Malteada Oreo</div>
+            <div class="item-desc">Malteada de vainilla con Oreo triturado y crema batida.</div>
+            <div class="item-bottom">
+                <div class="item-price">$79</div>
+                <span class="item-tag tag-popular">★ Popular</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="drinks" data-name="Cerveza Artesanal IPA" data-desc="Cerveza IPA local de barril, notas cítricas y lupulosas. 355ml." data-price="$89" data-emoji="🍺">
+        <div class="item-img">🍺</div>
+        <div class="item-info">
+            <div class="item-name">Cerveza Artesanal IPA</div>
+            <div class="item-desc">IPA local de barril, notas cítricas. 355ml.</div>
+            <div class="item-bottom">
+                <div class="item-price">$89</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desserts -->
+    <div class="section-title" data-cat="desserts">Postres</div>
+
+    <div class="menu-item" data-cat="desserts" data-name="Brownie Volcán" data-desc="Brownie caliente de chocolate oscuro con centro líquido, servido con helado de vainilla." data-price="$99" data-emoji="🍫">
+        <div class="item-img">🍫</div>
+        <div class="item-info">
+            <div class="item-name">Brownie Volcán</div>
+            <div class="item-desc">Brownie de chocolate oscuro con centro líquido y helado de vainilla.</div>
+            <div class="item-bottom">
+                <div class="item-price">$99</div>
+                <span class="item-tag tag-popular">★ Popular</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-item" data-cat="desserts" data-name="Cheesecake NY" data-desc="Cheesecake estilo New York con base de galleta y coulis de frutos rojos." data-price="$89" data-emoji="🍰">
+        <div class="item-img">🍰</div>
+        <div class="item-info">
+            <div class="item-name">Cheesecake NY</div>
+            <div class="item-desc">Estilo New York con coulis de frutos rojos.</div>
+            <div class="item-bottom">
+                <div class="item-price">$89</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="menu-footer">
+    <p>Precios incluyen IVA. Menú sujeto a disponibilidad.</p>
+    <div class="powered">
+        Powered by <span class="powered-logo">AutoSite</span>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+        <div class="modal-img" id="modalImg"></div>
+        <h2 id="modalName"></h2>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-price" id="modalPrice"></div>
+    </div>
+</div>
+
+<script>
+    // Category filter
+    const catBtns = document.querySelectorAll('.cat-btn');
+    const items = document.querySelectorAll('.menu-item');
+    const titles = document.querySelectorAll('.section-title');
+
+    catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            catBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const cat = btn.dataset.cat;
+
+            items.forEach(item => {
+                item.style.display = (cat === 'all' || item.dataset.cat === cat) ? 'flex' : 'none';
+            });
+            titles.forEach(t => {
+                t.style.display = (cat === 'all' || t.dataset.cat === cat) ? 'flex' : 'none';
+            });
+        });
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        catBtns.forEach(b => b.classList.remove('active'));
+        catBtns[0].classList.add('active');
+
+        items.forEach(item => {
+            const name = item.dataset.name.toLowerCase();
+            item.style.display = name.includes(q) ? 'flex' : 'none';
+        });
+
+        titles.forEach(t => {
+            const cat = t.dataset.cat;
+            const hasVisible = [...document.querySelectorAll(`.menu-item[data-cat="${cat}"]`)].some(i => i.style.display !== 'none');
+            t.style.display = hasVisible ? 'flex' : 'none';
+        });
+    });
+
+    // Modal
+    const overlay = document.getElementById('modalOverlay');
+    items.forEach(item => {
+        item.addEventListener('click', () => {
+            document.getElementById('modalImg').textContent = item.dataset.emoji;
+            document.getElementById('modalName').textContent = item.dataset.name;
+            document.getElementById('modalDesc').textContent = item.dataset.desc;
+            document.getElementById('modalPrice').textContent = item.dataset.price;
+            overlay.classList.add('open');
+        });
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('open');
+    });
+</script>
+
+</body>
+</html>
