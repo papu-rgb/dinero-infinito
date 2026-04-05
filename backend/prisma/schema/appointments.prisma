@@ -1,40 +1,107 @@
 // Agenda de Citas — Módulo de Sergio
-// Sergio: este archivo es TU módulo. Edita aquí tus tablas.
+// Modelos: AppointmentType, Appointment, AvailableSlot, BlockedDate
+
+// ==================== ENUMS ====================
 
 enum AppointmentStatus {
   PENDING
   CONFIRMED
   CANCELLED
   COMPLETED
+  NO_SHOW
 }
 
-model Appointment {
-  id          String            @id @default(cuid())
+// ==================== APPOINTMENT TYPE ====================
+// Tipos de servicio que ofrece el negocio (Corte, Consulta, etc.)
+
+model AppointmentType {
+  id          String   @id @default(cuid())
   tenantId    String
-  clientName  String
-  clientPhone String
-  clientEmail String?
-  date        DateTime
-  time        String            // "09:00", "14:30"
-  status      AppointmentStatus @default(PENDING)
-  notes       String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  serviceId   String
+  name        String   // "Corte de cabello", "Consulta general"
+  description String?
+  duration    Int      // duración en minutos (30, 45, 60...)
+  price       Decimal? // precio opcional
+  active      Boolean  @default(true)
+  order       Int      @default(0) // para ordenar en la lista pública
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service      Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([tenantId])
+  @@index([tenantId, active])
+  @@map("appointment_types")
+}
+
+// ==================== APPOINTMENT ====================
+// Citas agendadas por clientes o admins
+
+model Appointment {
+  id                String            @id @default(cuid())
+  tenantId          String
+  serviceId         String
+  appointmentTypeId String
+  clientName        String
+  clientPhone       String
+  clientEmail       String?
+  date              DateTime
+  time              String            // "09:00", "14:30" (formato 24h)
+  status            AppointmentStatus @default(PENDING)
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service         Service         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  appointmentType AppointmentType @relation(fields: [appointmentTypeId], references: [id])
 
   @@index([tenantId])
   @@index([tenantId, date])
+  @@index([tenantId, status])
   @@map("appointments")
 }
 
+// ==================== AVAILABLE SLOT ====================
+// Horarios disponibles configurados por el admin
+
 model AvailableSlot {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   tenantId  String
-  dayOfWeek Int     // 0=Domingo, 1=Lunes, ..., 6=Sábado
-  startTime String  // "09:00"
-  endTime   String  // "09:30"
-  active    Boolean @default(true)
+  serviceId String
+  dayOfWeek Int      // 0=Domingo, 1=Lunes, ..., 6=Sábado
+  startTime String   // formato "HH:mm" (24h)
+  endTime   String   // formato "HH:mm" (24h)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
-  @@unique([tenantId, dayOfWeek, startTime]) // no duplicar slot
+  @@index([tenantId, dayOfWeek])
+  @@unique([tenantId, serviceId, dayOfWeek, startTime]) // no duplicar slot
   @@map("available_slots")
+}
+
+// ==================== BLOCKED DATE ====================
+// Días bloqueados (vacaciones, feriados, etc.)
+
+model BlockedDate {
+  id        String   @id @default(cuid())
+  tenantId  String
+  serviceId String
+  date      DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, date])
+  @@map("blocked_dates")
 }

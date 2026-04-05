@@ -48,6 +48,12 @@ model Tenant {
   users    User[]
   services Service[]
 
+  // Relaciones con módulo de citas (Sergio)
+  appointmentTypes AppointmentType[]
+  appointments     Appointment[]
+  availableSlots   AvailableSlot[]
+  blockedDates     BlockedDate[]
+
   @@map("tenants")
 }
 
@@ -94,6 +100,12 @@ model Service {
   active   Boolean     @default(true)
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Relaciones con módulo de citas (Sergio)
+  appointmentTypes AppointmentType[]
+  appointments     Appointment[]
+  availableSlots   AvailableSlot[]
+  blockedDates     BlockedDate[]
 
   @@unique([tenantId, type]) // un tenant no puede tener 2 servicios del mismo tipo
   @@map("services")
