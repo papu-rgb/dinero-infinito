@@ -379,7 +379,12 @@ GET    /public/page/:slug        → Página pública
 │   │   ├── services/             → lógica de negocio
 │   │   ├── websocket/            → Socket.io (cocina en tiempo real)
 │   │   ├── prisma/
-│   │   │   ├── schema.prisma
+│   │   │   ├── schema/
+│   │   │   │   ├── base.prisma         → datasource, generator, Tenant, User, Auth
+│   │   │   │   ├── menu.prisma         → MenuCategory, MenuItem
+│   │   │   │   ├── appointments.prisma → Appointment, AvailableSlot  ← Sergio
+│   │   │   │   ├── pos.prisma          → Table, Order, Payment, Inventory, etc.
+│   │   │   │   └── pages.prisma        → Page (landing)
 │   │   │   └── seed.ts
 │   │   ├── utils/                → helpers, ticket generator
 │   │   └── app.ts                → entrada Express + Socket.io

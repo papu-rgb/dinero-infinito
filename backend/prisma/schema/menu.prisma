@@ -1,0 +1,265 @@
+// Menú Digital + POS: categorías, items, mesas, pedidos, cocina, pagos, caja, inventario
+// Todo el módulo restaurante va aquí — el POS es extensión del menú
+
+// ==================== ENUMS ====================
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  RESERVED
+  CLEANING
+}
+
+enum OrderStatus {
+  PENDING
+  IN_KITCHEN
+  READY
+  DELIVERED
+  PAID
+  CANCELLED
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEOUT
+  DELIVERY
+}
+
+enum OrderItemStatus {
+  PENDING
+  PREPARING
+  READY
+  DELIVERED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+enum InventoryUnit {
+  KG
+  L
+  PZ
+  G
+  ML
+}
+
+enum InventoryMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  WASTE
+}
+
+enum KitchenStatus {
+  PENDING
+  PREPARING
+  READY
+}
+
+// ==================== MENÚ ====================
+
+model MenuCategory {
+  id       String @id @default(cuid())
+  tenantId String
+  name     String
+  order    Int    @default(0)
+
+  items MenuItem[]
+
+  @@index([tenantId])
+  @@map("menu_categories")
+}
+
+model MenuItem {
+  id          String  @id @default(cuid())
+  tenantId    String
+  categoryId  String
+  name        String
+  description String?
+  price       Float
+  image       String?
+  order       Int     @default(0)
+  active      Boolean @default(true)
+
+  category   MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([tenantId])
+  @@map("menu_items")
+}
+
+// ==================== MESAS ====================
+
+model RestaurantTable {
+  id       String      @id @default(cuid())
+  tenantId String
+  number   Int
+  name     String?
+  capacity Int         @default(4)
+  status   TableStatus @default(AVAILABLE)
+  zone     String?
+
+  orders Order[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId])
+  @@map("restaurant_tables")
+}
+
+// ==================== PEDIDOS ====================
+
+model Order {
+  id          String      @id @default(cuid())
+  tenantId    String
+  tableId     String?
+  userId      String
+  orderNumber Int
+  status      OrderStatus @default(PENDING)
+  type        OrderType   @default(DINE_IN)
+  subtotal    Float       @default(0)
+  tax         Float       @default(0)
+  discount    Float       @default(0)
+  total       Float       @default(0)
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  table          RestaurantTable? @relation(fields: [tableId], references: [id])
+  items          OrderItem[]
+  payments       Payment[]
+  ticket         Ticket?
+  kitchenDisplay KitchenDisplay?
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String          @id @default(cuid())
+  orderId    String
+  menuItemId String
+  quantity   Int             @default(1)
+  unitPrice  Float
+  subtotal   Float
+  notes      String?
+  status     OrderItemStatus @default(PENDING)
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@map("order_items")
+}
+
+// ==================== PAGOS ====================
+
+model Payment {
+  id        String        @id @default(cuid())
+  tenantId  String
+  orderId   String
+  method    PaymentMethod
+  amount    Float
+  change    Float         @default(0)
+  reference String?
+  createdAt DateTime      @default(now())
+
+  order  Order   @relation(fields: [orderId], references: [id])
+  ticket Ticket?
+
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+  @@map("payments")
+}
+
+// ==================== TICKETS ====================
+
+model Ticket {
+  id           String   @id @default(cuid())
+  tenantId     String
+  orderId      String   @unique
+  paymentId    String?  @unique
+  ticketNumber Int
+  data         Json
+  printedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  order   Order    @relation(fields: [orderId], references: [id])
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  @@index([tenantId])
+  @@map("tickets")
+}
+
+// ==================== CAJA ====================
+
+model CashRegister {
+  id             String    @id @default(cuid())
+  tenantId       String
+  userId         String
+  openedAt       DateTime  @default(now())
+  closedAt       DateTime?
+  openingAmount  Float
+  closingAmount  Float?
+  expectedAmount Float?
+  difference     Float?
+  notes          String?
+
+  @@index([tenantId])
+  @@map("cash_registers")
+}
+
+// ==================== INVENTARIO ====================
+
+model InventoryItem {
+  id           String        @id @default(cuid())
+  tenantId     String
+  name         String
+  unit         InventoryUnit
+  currentStock Float         @default(0)
+  minStock     Float         @default(0)
+  cost         Float         @default(0)
+  active       Boolean       @default(true)
+
+  movements InventoryMovement[]
+
+  @@index([tenantId])
+  @@map("inventory_items")
+}
+
+model InventoryMovement {
+  id              String                @id @default(cuid())
+  tenantId        String
+  inventoryItemId String
+  type            InventoryMovementType
+  quantity        Float
+  reason          String?
+  userId          String
+  createdAt       DateTime             @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("inventory_movements")
+}
+
+// ==================== COCINA ====================
+
+model KitchenDisplay {
+  id          String        @id @default(cuid())
+  tenantId    String
+  orderId     String        @unique
+  items       Json
+  status      KitchenStatus @default(PENDING)
+  sentAt      DateTime      @default(now())
+  completedAt DateTime?
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("kitchen_displays")
+}

@@ -1,0 +1,40 @@
+// Agenda de Citas — Módulo de Sergio
+// Sergio: este archivo es TU módulo. Edita aquí tus tablas.
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  tenantId    String
+  clientName  String
+  clientPhone String
+  clientEmail String?
+  date        DateTime
+  time        String            // "09:00", "14:30"
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, date])
+  @@map("appointments")
+}
+
+model AvailableSlot {
+  id        String  @id @default(cuid())
+  tenantId  String
+  dayOfWeek Int     // 0=Domingo, 1=Lunes, ..., 6=Sábado
+  startTime String  // "09:00"
+  endTime   String  // "09:30"
+  active    Boolean @default(true)
+
+  @@index([tenantId])
+  @@unique([tenantId, dayOfWeek, startTime]) // no duplicar slot
+  @@map("available_slots")
+}

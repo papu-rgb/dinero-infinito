@@ -1,0 +1,100 @@
+// Base: datasource, generator, enums y tablas core (Tenant, User, Auth)
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  OWNER
+  ADMIN
+  STAFF
+  CASHIER
+  KITCHEN
+}
+
+enum ServiceType {
+  MENU_DIGITAL
+  APPOINTMENT
+  POS
+  LANDING
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+// ==================== TENANT ====================
+
+model Tenant {
+  id           String   @id @default(cuid())
+  slug         String   @unique // subdominio: mibarberia.autosite.com
+  name         String
+  plan         Plan     @default(FREE)
+  logo         String?
+  customDomain String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users    User[]
+  services Service[]
+
+  @@map("tenants")
+}
+
+// ==================== USER ====================
+
+model User {
+  id           String   @id @default(cuid())
+  tenantId     String
+  email        String
+  passwordHash String
+  name         String?
+  role         Role     @default(OWNER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@unique([tenantId, email]) // mismo email puede existir en tenants distintos
+  @@map("users")
+}
+
+// ==================== AUTH ====================
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ==================== SERVICE ====================
+
+model Service {
+  id       String      @id @default(cuid())
+  tenantId String
+  type     ServiceType
+  config   Json?
+  active   Boolean     @default(true)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, type]) // un tenant no puede tener 2 servicios del mismo tipo
+  @@map("services")
+}
