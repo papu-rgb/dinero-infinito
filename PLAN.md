@@ -454,10 +454,10 @@ GET    /public/page/:slug        → Página pública
 - [ ] Endpoints públicos del menú por subdominio
 
 ### Fase 3 — Módulo Agenda de Citas (Sergio)
-- [ ] CRUD Appointments (routes, controllers, services)
-- [ ] Configuración de AvailableSlots
-- [ ] Endpoints públicos de citas por subdominio
-- [ ] Validación de slots disponibles (no duplicar citas)
+- [x] CRUD Appointments (routes, controllers, services)
+- [x] Configuración de AvailableSlots
+- [x] Endpoints públicos de citas por subdominio
+- [x] Validación de slots disponibles (no duplicar citas)
 
 ### Fase 4 — Módulo POS (Tú)
 - [ ] CRUD Mesas (estados, zonas)

@@ -454,18 +454,18 @@ npm install -D typescript @types/express @types/node
 
 ## Checklist
 
-- [ ] Modelos Prisma (AppointmentType, Appointment, AvailableSlot, BlockedDate)
-- [ ] Migración de base de datos
-- [ ] Validators con Zod
-- [ ] Service: lógica de cálculo de slots disponibles
-- [ ] Service: lógica de agendamiento con validaciones
-- [ ] Service: lógica de transiciones de estado
-- [ ] Controller: endpoints admin de citas
-- [ ] Controller: endpoints admin de slots
-- [ ] Controller: endpoints admin de fechas bloqueadas
-- [ ] Controller: endpoints admin de tipos de servicio (CRUD)
-- [ ] Controller: endpoints públicos (listar tipos, consultar slots, agendar, consultar estado)
-- [ ] Routes: registrar todas las rutas
-- [ ] Manejo de errores con códigos específicos
-- [ ] Filtros y paginación en listado de citas
-- [ ] Seed de datos de prueba (opcional pero útil)
+- [x] Modelos Prisma (AppointmentType, Appointment, AvailableSlot, BlockedDate)
+- [x] Migración de base de datos
+- [x] Validators con Zod
+- [x] Service: lógica de cálculo de slots disponibles
+- [x] Service: lógica de agendamiento con validaciones
+- [x] Service: lógica de transiciones de estado
+- [x] Controller: endpoints admin de citas
+- [x] Controller: endpoints admin de slots
+- [x] Controller: endpoints admin de fechas bloqueadas
+- [x] Controller: endpoints admin de tipos de servicio (CRUD)
+- [x] Controller: endpoints públicos (listar tipos, consultar slots, agendar, consultar estado)
+- [x] Routes: registrar todas las rutas
+- [x] Manejo de errores con códigos específicos
+- [x] Filtros y paginación en listado de citas
+- [x] Seed de datos de prueba (opcional pero útil)
